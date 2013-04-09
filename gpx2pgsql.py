@@ -112,10 +112,10 @@ def process_gpx(db, gpx_id, f, options):
                 lon = float(node.getAttribute('lon'))
                 dist = abs(lon - lastNode[0]) + abs(lat - lastNode[1]) if lastNode else options.dmin * 2
                 lastNode = (lon, lat)
-                if dist and dist > options.dmax:
+                if dist > options.dmax:
                     needWrite = True
                     polledPoints = [(lon, lat)]
-                elif not dist or dist >= options.dmin:
+                elif dist >= options.dmin:
                     points.append((lon, lat))
                     if len(points) >= options.pmax:
                         needWrite = True
@@ -131,10 +131,9 @@ def process_gpx(db, gpx_id, f, options):
                 geom = 'SRID=4326;LINESTRING(' + ','.join(['{0} {1}'.format(x[0], x[1]) for x in points]) + ')'
                 cur.execute('insert into gpx_data (gpx_id, segment_id, track_date, track) values (%s, %s, %s, {0})'.format(geomfromtext),
                         (gpx_id, segment, lastDate, geom))
-                lastDate = None
                 segment += 1
-                points = polledPoints
-                polledPoints = []
+            points = polledPoints
+            polledPoints = []
             needWrite = False
     cur.close()
 
