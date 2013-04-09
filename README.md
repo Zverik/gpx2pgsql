@@ -1,6 +1,6 @@
 # GPX Planet to PostgreSQL
 
-This is a simple tool that stores GPX dump in a PostgreSQL databae with PostGIS extension.
+This is a simple tool that stores GPX dump in a PostgreSQL database with PostGIS extension.
 
 ## Usage
 
