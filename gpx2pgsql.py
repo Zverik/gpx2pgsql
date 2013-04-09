@@ -30,9 +30,27 @@ def create_tables(proj=4326):
         track geometry(linestring, {0}) not null,
         primary key (gpx_id, segment_id)
     );""".format(proj))
+    cur.close()
+
+def create_index_and_vacuum(db):
+    cur = db.cursor()
     cur.execute('create index on gpx_data (gpx_id);')
     cur.execute('create index on gpx_data using gist (track);')
+    cur.execute('vacuum analyze gpx_data;')
     cur.close()
+
+def get_all_ids(db):
+    cur = db.cursor()
+    cur.execute('select gpx_id from gpx_info;')
+    gpxids = [rec[0] for rec in cur]
+    cur.close()
+    return gpxids
+
+def get_fake_id(gpxids):
+    i = -1
+    while i in gpxids:
+        i -= 1
+    return i
 
 def process_metadata(f):
     count = 0
@@ -159,15 +177,16 @@ if __name__ == '__main__':
     if options.tables:
         create_tables(900913 if options.reproject else 4326)
 
+    gpxids = get_all_ids(db)
+
     if options.single:
-        gpxinfo = { 'id': -1, 'visibility': 'trackable' }
+        gpxinfo = { 'id': get_fake_id(gpxids), 'visibility': 'trackable' }
         store_metadata(db, gpxinfo)
         process_gpx(db, gpxinfo['id'], options.file, options)
         sys.exit(0)
 
     tar = tarfile.open(fileobj=options.file, mode='r|')
     i = 0
-    fakeid = -1
     for f in tar:
         if 'metadata.xml' in f.name:
             sys.stdout.write('Processing metadata')
@@ -185,14 +204,13 @@ if __name__ == '__main__':
                 if k in f.name:
                     gpxinfo = v
             if not gpxinfo:
-                gpxinfo = { 'id': fakeid, 'visibility': 'trackable' }
-                fakeid -= 1
-            store_metadata(db, gpxinfo)
-            process_gpx(db, gpxinfo['id'], tar.extractfile(f), options)
+                gpxinfo = { 'id': get_fake_id(gpxids), 'visibility': 'trackable' }
+            if not gpxinfo['id'] in gpxids:
+                gpxids.append(gpxinfo['id'])
+                store_metadata(db, gpxinfo)
+                process_gpx(db, gpxinfo['id'], tar.extractfile(f), options)
     tar.close()
 
-    cur = db.cursor()
-    cur.execute('vacuum analyze gpx_data;')
-    cur.close()
+    create_index_and_vacuum(db)
     db.commit()
     db.close()
