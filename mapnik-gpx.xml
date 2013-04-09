@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE Map [
+<!ENTITY srs900913 "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs +over">
+]>
+<Map background-color="transparent" srs="&srs900913;">
+    <Style name="trace">
+        <Rule>
+            <LineSymbolizer stroke="black" />
+        </Rule>
+    </Style>
+    <Layer name="gpx" status="on" srs="&srs900913;">
+        <StyleName>trace</StyleName>
+        <Datasource>
+            <Parameter name="table">gpx_data</Parameter>
+            <Parameter name="srid">900913</Parameter>
+            <Parameter name="geometry_field">track</Parameter>
+            <Parameter name="geometry_table">gpx_data</Parameter>
+
+            <Parameter name="type">postgis</Parameter>
+            <Parameter name="password">gis</Parameter>
+            <Parameter name="host"></Parameter>
+            <Parameter name="port"></Parameter>
+            <Parameter name="user">zverik</Parameter>
+            <Parameter name="dbname">gis</Parameter>
+            <!-- this should be 'false' if you are manually providing the 'extent' -->
+            <Parameter name="estimate_extent">false</Parameter>
+            <!-- manually provided extent in epsg 900913 for whole globe -->
+            <!-- providing this speeds up Mapnik database queries -->
+            <Parameter name="extent">-20037508,-19929239,20037508,19929239</Parameter>
+        </Datasource>
+    </Layer>
+</Map>
