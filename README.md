@@ -12,7 +12,7 @@ coordinates to EPSG:900913 for usage with an example mapnik style:
 
 This script will skip tracks with IDs already in the database, so if it's stopped, the processing could be resumed with the same command (bar `-c` switch, of course).
 
-The 391 MB xzipped test data needed 1098 MB in a database, so one can expect only tripling in size, not tens of gigabytes.
+The 391 MB xzipped test data needed 1098 MB in a database, so one can expect only tripling in size, not hundreds of gigabytes.
 
 ## Example Mapnik Style
 
