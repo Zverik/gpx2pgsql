@@ -36,8 +36,15 @@ def create_index_and_vacuum(db):
     cur = db.cursor()
     cur.execute('create index on gpx_data (gpx_id);')
     cur.execute('create index on gpx_data using gist (track);')
+    cur.close()
+    db.commit()
+
+    old_isolation = db.isolation_level
+    db.set_isolation_level(0)
+    cur = db.cursor()
     cur.execute('vacuum analyze gpx_data;')
     cur.close()
+    db.set_isolation_level(old_isolation)
 
 def get_all_ids(db):
     cur = db.cursor()
@@ -210,6 +217,6 @@ if __name__ == '__main__':
                 process_gpx(db, gpxinfo['id'], tar.extractfile(f), options)
     tar.close()
 
+    print 'Creating indexes'
     create_index_and_vacuum(db)
-    db.commit()
     db.close()
