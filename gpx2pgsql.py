@@ -146,7 +146,7 @@ if __name__ == '__main__':
     apg_input.add_argument('-s', '--single', action='store_true', help='process a single GPX file')
 
     apg_filter = parser.add_argument_group('Filter')
-    apg_filter.add_argument('--dmin', type=float, help='minimum distance in degrees between track points', default=1e-6)
+    apg_filter.add_argument('--dmin', type=float, help='minimum distance in degrees between track points', default=1e-7)
     apg_filter.add_argument('--dmax', type=float, help='maximum distance in degrees between track points', default=1e-3)
     apg_filter.add_argument('--pmin', type=int, help='minimum number of points in a track segment (default: {0})'.format(10), default=10)
     apg_filter.add_argument('-p', '--pmax', type=int, help='maximum number of points in a track segment (default: {0})'.format(10000), default=10000)
